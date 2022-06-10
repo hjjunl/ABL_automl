@@ -26,3 +26,4 @@
   - Use the best model as the main model
   - Send model through the RestAPI
   - XAI: Explainable Dashboard, Arena or SHAP
+![image](https://user-images.githubusercontent.com/50603209/172993514-f5e9086c-0f43-4fa1-bbe2-139e5eba5689.png)
