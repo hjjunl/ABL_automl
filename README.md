@@ -34,3 +34,10 @@
 
 Sampling
 https://github.com/Balacoumarane/casestudy/blob/31839566f1daecf7faab0f5aa80e512020fd9f81/ChurnModule/utils/sampling.py
+
+
+
+
+Data
+1. Multi: https://www.kaggle.com/competitions/prudential-life-insurance-assessment/data
+2. Binary: https://github.com/mwitiderrick/insurancedata/blob/master/insurance_claims.csv
