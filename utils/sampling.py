@@ -4,7 +4,7 @@ from imblearn.pipeline import Pipeline
 from imblearn.over_sampling import ADASYN
 from imblearn.over_sampling import SMOTE
 from imblearn.over_sampling import SVMSMOTE
-from imblearn.over_sampling import SMOTENC
+from imblearn.over_sampling import SMOTENC, RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 
 from .log import get_logger
@@ -23,7 +23,7 @@ class SamplingMethods:
         self.X = X
         self.y = y
 
-    def sampling_technique(self, sampling_method=None, random_state=42, sampling_strategy='auto',
+    def sampling_technique(self, sampling_method=None, random_state=42, sampling_strategy=0.5,
                            sampling_k_neighbors=5, sampling_m_neighbors=10, smotesvm_stepsize=0.5,
                            categorical_features_index=None,
                            cpu_cnt=1):
@@ -34,19 +34,16 @@ class SamplingMethods:
         1. Random under sampling
         2. SMOTE-NC
         3. ADASYN
-        4. SMOTE-UnderSample
+        4. SMOTE
         5. SVMSMOTE
-        6. SMOTE-OverSample
+        6. Random over sampling
         Only method 1 and method 2 are applicable for categorical data
         Args:
             sampling_method (str or None): Enter sampling method. Currently implemented ("RandomUnderSample",
                                             "SmoteUnderSample","SmoteNC", "SmoteSVM", "ADASYN")
             random_state (int): random seed for reproducibility
-            sampling_strategy (str): 'majority': resample only the majority class;
-                                     'not minority': resample all classes but the minority class;
-                                     'not majority': resample all classes but the majority class;
-                                     'all': resample all classes;
-                                     'auto': equivalent to 'not minority'.
+            sampling_ratio (float): It corresponds to the desired ratio of the number of samples in the minority
+                                          class over the number of samples in the majority class after resampling.
 
             sampling_k_neighbors (int): number of nearest neighbours to used to construct synthetic samples.
             categorical_features_index (int or list): index for categorical features
@@ -55,18 +52,18 @@ class SamplingMethods:
             X_res (pd.DataFrame): sampled predictor data
             y_res (series) sampled target
         """
-        if sampling_method is None or sampling_method not in ["RandomUnderSample", "SmoteUnderSample", "SmoteOverSample",
+        if sampling_method is None or sampling_method not in ["RandomUnderSample", "RandomOverSample", "Smote",
                                                               "SmoteNC", "SmoteSVM", "ADASYN"]:
             raise NotImplementedError("Please enter sampling methods")
 
         elif sampling_method == "RandomUnderSample":
             X_res, y_res = self.random_under_sample(random_state, sampling_strategy)
 
-        elif sampling_method == "SmoteUnderSample":
-            X_res, y_res = self.smote_under_sample(random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt)
+        elif sampling_method == "RandomOverSample":
+            X_res, y_res = self.random_over_sample(random_state, sampling_strategy)
 
-        elif sampling_method == "SmoteOverSample":
-            X_res, y_res = self.smote_over_sample(random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt)
+        elif sampling_method == "Smote":
+            X_res, y_res = self.smote_under_sample(random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt)
 
         elif sampling_method == "SmoteSVM":
             X_res, y_res = self.smote_svm(random_state, sampling_strategy, sampling_k_neighbors,
@@ -84,7 +81,8 @@ class SamplingMethods:
         The function performs random under sampling and returns sampled data
         Args:
             random_state (int): random seed for reproducibility
-            sampling_strategy (float): The number of samples in the different classes will be equalized.
+            sampling_strategy (float): It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
         Returns:
             X_res (pd.DataFrame): sampled predictor data
             y_res (series) sampled target
@@ -94,12 +92,29 @@ class SamplingMethods:
         logger.info('Resampled dataset using random undersampling shape %s' % Counter(y_res))
         return X_res, y_res
 
+    def random_over_sample(self, random_state, sampling_strategy):
+        """
+        The function performs random under sampling and returns sampled data
+        Args:
+            random_state (int): random seed for reproducibility
+            sampling_strategy (float): It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
+        Returns:
+            X_res (pd.DataFrame): sampled predictor data
+            y_res (series) sampled target
+        """
+        rus = RandomOverSampler(random_state=random_state, sampling_strategy=sampling_strategy)
+        X_res, y_res = rus.fit_resample(self.X, self.y)
+        logger.info('Resampled dataset using random oversampling shape %s' % Counter(y_res))
+        return X_res, y_res
+
     def smote_under_sample(self, random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt):
         """
         The function performs random under sampling and returns sampled data
         Args:
             random_state (int): random seed for reproducibility
-            sampling_strategy (float): The number of samples in the different classes will be equalized.
+            sampling_strategy (float): It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
             sampling_k_neighbors (int): If int, number of nearest neighbours to used to construct synthetic samples.
             cpu_cnt (int): The number of cpu counts.
         Returns:
@@ -114,30 +129,14 @@ class SamplingMethods:
         logger.info('Resampled dataset using SMOTE undersampling shape %s' % Counter(y_res))
         return X_res, y_res
 
-    def smote_over_sample(self, random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt):
-        """
-        The function performs random under sampling and returns sampled data
-        Args:
-            random_state (int): random seed for reproducibility
-            sampling_strategy (float): The number of samples in the different classes will be equalized.
-            sampling_k_neighbors (int): If int, number of nearest neighbours to used to construct synthetic samples.
-            cpu_cnt (int): The number of cpu counts.
-        Returns:
-            X_res (pd.DataFrame): sampled predictor data
-            y_res (series) sampled target
-        """
-        over = SMOTE(sampling_strategy=sampling_strategy, k_neighbors=sampling_k_neighbors, random_state=random_state, n_jobs=cpu_cnt)
-        X_res, y_res = over.fit_resample(self.X, self.y)
-        logger.info('Resampled dataset using SMOTE oversampling shape %s' % Counter(y_res))
-        return X_res, y_res
-
     def smote_nc(self, categorical_features_index, random_state, sampling_strategy, sampling_k_neighbors, cpu_cnt):
         """
         The function performs random under sampling and returns sampled data
         Args:
             random_state (int): random seed for reproducibility
             categorical_features_index (int or list): array of indices specifying the categorical features
-            sampling_strategy (float): The number of samples in the different classes will be equalized.
+            sampling_strategy (float): It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
             sampling_k_neighbors (int): If int, number of nearest neighbours to used to construct synthetic samples.
             cpu_cnt (int): The number of cpu counts.
         Returns:
@@ -159,7 +158,8 @@ class SamplingMethods:
         The function performs random under sampling and returns sampled data
         Args:
             random_state (int): random seed for reproducibility
-            sampling_strategy (float): The number of samples in the different classes will be equalized.
+            sampling_strategy (float): It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
             sampling_k_neighbors (int): number of nearest neighbours to used to construct synthetic samples.
             sampling_m_neighbors (int): number of nearest neighbours to use to determine if a minority sample is in
                                         danger
@@ -184,8 +184,8 @@ class SamplingMethods:
         The function performs random under sampling and returns sampled data
         Args:
             random_state (int): random seed for reproducibility
-            adasyn_sampling_ratio (float):  It corresponds to the desired ratio of the number of samples in the minority
-                                        class over the number of samples in the majority class after resampling
+            sampling_strategy (float):  It corresponds to the desired ratio of the number of samples in the minority
+                                        class over the number of samples in the majority class after resampling.
             adasyn_k_neighbors (int): number of nearest neighbours to used to construct synthetic samples.
         Returns:
             X_res (pd.DataFrame): sampled predictor data
