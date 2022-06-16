@@ -64,15 +64,15 @@ if __name__ == '__main__':
 
     print(f'***************  XGB Best Parameter Search (Optuna) ******************')
     xgb = XGBoostModel(X_train, y_train, X_valid, y_valid)
-    xgb.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='XGB')
+    xgb.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='XGB')
 
     print(f'***************  LGBM Best Parameter Search (Optuna) ******************')
     lgb = LGBMModel(X_train, y_train, X_valid, y_valid)
-    lgb.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='LGBM')
+    lgb.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='LGBM')
 
     print(f'***************  CatBoost Best Parameter Search (Optuna) ******************')
     cbc = CatBoostModel(X_train, y_train, X_valid, y_valid)
-    cbc.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='CBC')
+    cbc.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='CBC')
 
 
 

@@ -46,7 +46,7 @@ if __name__ == '__main__':
     #### data load ####
     print(f'***************  Load dataset ******************')
     if train.split('.')[1] == "csv":
-        data = pd.read_csv(f'{os.getcwd()}/data/raw/{train}')
+        data = pd.read_csv(f'{os.getcwd()}/data/preprocessed/{train}')
 
     elif train.split('.')[1] == "pkl":
         data = pd.read_pickle(f'{os.getcwd()}/data/preprocessed/{train}')
@@ -60,18 +60,18 @@ if __name__ == '__main__':
         print(f'***************  XGB Best Parameter Search (Optuna) ******************')
         xgb = XGBoostModel(X_train, y_train, X_valid, y_valid)
         start = time.time()
-        xgb.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='XGB')
+        xgb.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='XGB')
         print("time :", time.time() - start)
 
     elif model == 'LGBM':
         print(f'***************  LGBM Best Parameter Search (Optuna) ******************')
         lgb = LGBMModel(X_train, y_train, X_valid, y_valid)
-        lgb.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='LGBM')
+        lgb.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='LGBM')
 
     elif model == 'CBC':
         print(f'***************  CatBoost Best Parameter Search (Optuna) ******************')
         cbc = CatBoostModel(X_train, y_train, X_valid, y_valid)
-        cbc.train(Optuna=True, opt_trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='CBC')
+        cbc.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='CBC')
 
     else:
         print("Model type ERROR!!! (select model: XGB, LGBM, CBC)")
