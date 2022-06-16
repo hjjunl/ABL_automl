@@ -60,9 +60,7 @@ if __name__ == '__main__':
 
     print(f'***************  XGB Best Parameter Search (Random Search) ******************')
     xgb = XGBoostModel(X, y)
-    start = time.time()
     xgb.train(RandomSearch=True, gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), cv = int(cv), trials=int(trials))
-    print("time :", time.time() - start)
 
     print(f'***************  LGBM Best Parameter Search (Random Search) ******************')
     lgb = LGBMModel(X, y)
