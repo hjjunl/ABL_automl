@@ -6,7 +6,7 @@ from optuna import Trial
 from optuna.samplers import TPESampler
 from sklearn.metrics import log_loss
 import json
-from lightgbm import LGBMClassifier
+from lightgbm.sklearn import LGBMClassifier
 import shap
 import matplotlib.pyplot as plt
 from utils import log
@@ -20,6 +20,7 @@ import os
 
 logger = log.get_logger(__name__)
 warnings.filterwarnings(action='ignore')
+
 today = datetime.today().strftime("%Y%m%d")
 
 model_path = f'./outputs/{today}/lightgbm/models'
