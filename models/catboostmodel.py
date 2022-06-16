@@ -12,25 +12,31 @@ import matplotlib.pyplot as plt
 from utils import log
 import pickle
 from sklearn.model_selection import RandomizedSearchCV
-import json
+import datetime
 
 logger = log.get_logger(__name__)
 
 import pathlib
 import os
 
-model_path = './outputs/catboost/models'
-param_path = './outputs/catboost/params'
-visual_path = './outputs/catboost/visualization'
+today = datetime.today().strftime("%Y%m%d")
+
+model_path = './outputs/{today}/catboost/models'
+param_path = './outputs/{today}/catboost/params'
+visual_path = './outputs/{today}/catboost/visualization'
 
 _OUTPUT_DIR = pathlib.Path(os.path.join('./outputs'))
-_CBC_DIR = pathlib.Path(os.path.join('./outputs/catboost'))
+_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
+_CBC_DIR = pathlib.Path(os.path.join('./outputs/{today}/catboost'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
 
 if not _OUTPUT_DIR.exists():
     _OUTPUT_DIR.mkdir()
+
+if not _DATE_DIR.exists():
+    _DATE_DIR.mkdir()
 
 if not _CBC_DIR.exists():
     _CBC_DIR.mkdir()
@@ -164,12 +170,8 @@ class CatBoostModel:
                         'max_bin' : trial.suggest_int('max_bin',2,100)
                         }
 
-                    if gpu == True:
-                        model = CatBoostClassifier(** params_cbc, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
-                    else:
-                        model = CatBoostClassifier(** params_cbc, thread_count = int(cpu_cnt))
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
+                    model = CatBoostClassifier(** params_cbc, thread_count = int(cpu_cnt))
+                    model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
 
                 cbc_pred = model.predict_proba(X_test)
 

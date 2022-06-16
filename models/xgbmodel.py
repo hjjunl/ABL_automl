@@ -12,25 +12,31 @@ import matplotlib.pyplot as plt
 from utils import log
 import pickle
 from sklearn.model_selection import RandomizedSearchCV
-import json
+import datetime
 
 logger = log.get_logger(__name__)
 
 import pathlib
 import os
 
-model_path = './outputs/xgboost/models'
-param_path = './outputs/xgboost/params'
-visual_path = './outputs/xgboost/visualization'
+today = datetime.today().strftime("%Y%m%d")
 
-_OUTPUT_DIR = pathlib.Path(os.path.join('./outputs'))
-_XGB_DIR = pathlib.Path(os.path.join('./outputs/xgboost'))
+model_path = './outputs/{today}/xgboost/models'
+param_path = './outputs/{today}/xgboost/params'
+visual_path = './outputs/{today}/xgboost/visualization'
+
+_OUTPUT_DIR = pathlib.Path(os.path.join('./outputs/'))
+_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
+_XGB_DIR = pathlib.Path(os.path.join('./outputs/{today}/xgboost'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
 
 if not _OUTPUT_DIR.exists():
     _OUTPUT_DIR.mkdir()
+
+if not _DATE_DIR.exists():
+    _DATE_DIR.mkdir()
 
 if not _XGB_DIR.exists():
     _XGB_DIR.mkdir()

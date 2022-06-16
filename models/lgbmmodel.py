@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from utils import log
 import pickle
 from sklearn.model_selection import RandomizedSearchCV
-import json
+import datetime
 import warnings
 
 import pathlib
@@ -20,13 +20,15 @@ import os
 
 logger = log.get_logger(__name__)
 warnings.filterwarnings(action='ignore')
+today = datetime.today().strftime("%Y%m%d")
 
-model_path = './outputs/lightgbm/models'
-param_path = './outputs/lightgbm/params'
-visual_path = './outputs/lightgbm/visualization'
+model_path = './outputs/{today}/lightgbm/models'
+param_path = './outputs/{today}/lightgbm/params'
+visual_path = './outputs/{today}/lightgbm/visualization'
 
 _OUTPUT_DIR = pathlib.Path(os.path.join('./outputs'))
-_LGBM_DIR = pathlib.Path(os.path.join('./outputs/lightgbm'))
+_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
+_LGBM_DIR = pathlib.Path(os.path.join('./outputs/{today}/lightgbm'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
@@ -34,6 +36,9 @@ _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
 if not _OUTPUT_DIR.exists():
     _OUTPUT_DIR.mkdir()
 
+if not _DATE_DIR.exists():
+    _DATE_DIR.mkdir()
+    
 if not _LGBM_DIR.exists():
     _LGBM_DIR.mkdir()
 
