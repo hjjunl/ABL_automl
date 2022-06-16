@@ -14,7 +14,6 @@
 
 [6. 부록](#etc)
 
-* 참고: https://agilesoda.notion.site/AutoML-68006cf33b21473da9045ae8ad9a12a2
 
 <hr>
 
@@ -23,13 +22,13 @@
 <hr>
     
 ### 2. 기본 기능 <span id="basic-function"><span>
-* db로부터 data 추출(option)
-* 모델 선정(option)
+* db로부터 data 추출
 * Feature Elimination
+* Data Balancing
+* 모델 선정
 * EDA
-* optuna를 통한 하이퍼파라미터 튜닝
+* 하이퍼파라미터 튜닝
 * 모델 학습 및 output 산출
-    - 단, multi classification 불가능
 
     
 <hr>
@@ -45,7 +44,7 @@
 
 <hr>
     
-### 4. 실행 스크립트 목록 <span id="file-list"><span>
+### 4. 실행 스크립트 목록 - Plan A <span id="file-list"><span>
 #### model_selection.py
 - XGB, LGBM, CatBoost 모델 성능을 비교해 좋은 성능을 내는 모델을 찾기 위한 스크립트
 - 하이퍼파라미터의 경우 RandomSearch를 통해 최적의 파라미터를 찾은 결과
@@ -60,6 +59,23 @@
 #### xai_results.py
 - XAI 대시보드를 생성하기 위한 스크립트
 
+#### total_script.py
+- 위 스크립트들을 한번에 실행시키는 스크립트
+    
+### 4. 실행 스크립트 목록 - Plan B <span id="file-list"><span>
+#### data_balancing_binary.py / data_balancing_multi.py
+- target class별 데이터 분포가 다를 시 데이터를 balancing 해주기 위한 스크립트
+- Sampling 옵션: RandomUnderSample, RandomOverSample, Smote, SmoteNC, SmoteSVM, ADASYN
+    
+#### model_selection_B.py
+- XGB, LGBM, CatBoost 모델 성능을 비교해 좋은 성능을 내는 모델을 찾기 위한 스크립트
+- 하이퍼파라미터의 경우 Optuna를 통해 최적의 파라미터를 찾은 결과
+    
+#### xai_results.py
+- XAI 대시보드를 생성하기 위한 스크립트
+    
+#### total_script_B.py
+- 위 스크립트들을 한번에 실행시키는 스크립트
 <hr>
     
     
@@ -70,7 +86,7 @@
 - pip == 20.3.3
 
 **0) 데이터 추출을 위한 준비**
-- [ ]  total_script.py에서 주석 해제
+- [ ]  total_script.py / total_script_B.py에서 주석 해제
 - [ ]  db_config.env 파일에 목록에 맞는 내용 작성
 - [ ]  QUERY의 경우 QUERY문이 별도로 저장되어 있는 SQL파일 경로 작성
 
@@ -87,7 +103,7 @@
 - [ ] data/preprocessed 폴더에 preprocess 과정이 끝난 데이터가 들어있는지 확인
 
 **3) 기타 사항 확인**
-- [ ] total_script.py 실행을 위한 target(y값) column명 확인  
+- [ ] total_script.py / total_script_B.py 실행을 위한 target(y값) column명 확인  
 - [ ] 사용가능한 gpu 자원 확인 (cli 명령어: nvidia-smi)
     
 
@@ -96,9 +112,13 @@
 pip install -r requirements.txt
 ```
 
-#### 5-3. total_script.py 실행을 위한 arguments 파악
+#### 5-3. total_script.py / total_script_B.py 실행을 위한 arguments 파악
 ```
 python total_script.py --help
+```
+    
+```
+python total_script_B.py --help
 ```
     
 ##### option 설명
@@ -148,10 +168,14 @@ python total_script.py --help
 - -cpu_cnt: 사용할 cpu 개수 선택
     - default = 1
 
-#### 5-4. total_script.py 실행
+#### 5-4. total_script.py / total_script_B.py 실행
 **실행 예시**
 ```
 python total_script.py -model_type CBC -data train.csv -target label 
+```
+    
+```
+python total_script_B.py -model_type CBC -data train.csv -target label 
 ```
 
 **일부 기능만 실행 시 주석 처리 후 진행 [6. 부록](#etc) 참고**
