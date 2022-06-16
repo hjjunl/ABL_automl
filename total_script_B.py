@@ -42,7 +42,7 @@ def main(train, test, target, cv, sampling, sampling_ratio, sampling_k_neighbors
 
     try:
         print("============================= Start Parameter tunning & Model Selection =============================")
-        subprocess.run(['python', 'model_selection_B.py', '-train', train, '-target', target, '-cv', cv, '-gpu', gpu, '-gpu_id', gpu_id,\
+        subprocess.run(['python', 'model_selection_B.py', '-train', train, '-target', target, '-valid_size', valid_size,'-model_save', model_save,'-cv', cv, '-gpu', gpu, '-gpu_id', gpu_id,\
                         '-cpu_cnt', cpu_cnt])
     except Exception as e:
         print("Model Selection ERROR!!!")

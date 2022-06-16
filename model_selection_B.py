@@ -12,7 +12,7 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
 
-from sklearn.model_selection import KFold, cross_val_score, train_test_split
+from sklearn.model_selection import KFold, cross_val_score
 
 from models.xgbmodel import XGBoostModel
 from models.lgbmmodel import LGBMModel
@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-valid_size', dest = 'valid_size', default = '0.2')
     parser.add_argument('-model_save', dest = 'model_save', default = 'True')
+    parser.add_argument('-cv', dest = 'cv', default = '5')
 
     parser.add_argument('-trials', dest = 'trials', default = '1')
     
