@@ -46,10 +46,10 @@ if __name__ == '__main__':
     #### data load ####
     print(f'***************  Load dataset ******************')
     if train.split('.')[1] == "csv":
-        data = pd.read_csv(f'{os.getcwd()}/data/raw/{train}')
+        data = pd.read_csv(f'{os.getcwd()}/data/preprocessed/{train}')
 
     elif train.split('.')[1] == "pkl":
-        data = pd.read_pickle(f'{os.getcwd()}/data/raw/{train}')
+        data = pd.read_pickle(f'{os.getcwd()}/data/preprocessed/{train}')
 
 
     ### Best parameter search ####

@@ -12,7 +12,7 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
 
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import KFold, cross_val_score, train_test_split
 
 from models.xgbmodel import XGBoostModel
 from models.lgbmmodel import LGBMModel
