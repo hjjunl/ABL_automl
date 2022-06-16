@@ -22,13 +22,13 @@ logger = log.get_logger(__name__)
 warnings.filterwarnings(action='ignore')
 today = datetime.today().strftime("%Y%m%d")
 
-model_path = './outputs/{today}/lightgbm/models'
-param_path = './outputs/{today}/lightgbm/params'
-visual_path = './outputs/{today}/lightgbm/visualization'
+model_path = f'./outputs/{today}/lightgbm/models'
+param_path = f'./outputs/{today}/lightgbm/params'
+visual_path = f'./outputs/{today}/lightgbm/visualization'
 
 _OUTPUT_DIR = pathlib.Path(os.path.join('./outputs'))
-_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
-_LGBM_DIR = pathlib.Path(os.path.join('./outputs/{today}/lightgbm'))
+_DATE_DIR = pathlib.Path(os.path.join(f'./outputs/{today}'))
+_LGBM_DIR = pathlib.Path(os.path.join(f'./outputs/{today}/lightgbm'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
