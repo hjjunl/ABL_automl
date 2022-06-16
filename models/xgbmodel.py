@@ -21,13 +21,13 @@ import os
 
 today = datetime.today().strftime("%Y%m%d")
 
-model_path = './outputs/{today}/xgboost/models'
-param_path = './outputs/{today}/xgboost/params'
-visual_path = './outputs/{today}/xgboost/visualization'
+model_path = f'./outputs/{today}/xgboost/models'
+param_path = f'./outputs/{today}/xgboost/params'
+visual_path = f'./outputs/{today}/xgboost/visualization'
 
 _OUTPUT_DIR = pathlib.Path(os.path.join('./outputs/'))
-_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
-_XGB_DIR = pathlib.Path(os.path.join('./outputs/{today}/xgboost'))
+_DATE_DIR = pathlib.Path(os.path.join(f'./outputs/{today}'))
+_XGB_DIR = pathlib.Path(os.path.join(f'./outputs/{today}/xgboost'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
