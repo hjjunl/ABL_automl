@@ -58,6 +58,6 @@ if __name__ == '__main__':
                                                     sampling_k_neighbors = int(sampling_k_neighbors), sampling_m_neighbors = int(sampling_m_neighbors), \
                                                     smotesvm_stepsize = float(smotesvm_stepsize), categorical_features_index = categorical_features_index, cpu_cnt = int(cpu_cnt))
     
-    y_df = pd.DataFrame({'target':y_sampling})
+    y_df = pd.DataFrame({target_name:y_sampling})
     df_sampling = pd.concat([X_sampling, y_df], axis=1)
     df_sampling.to_pickle(f'{os.getcwd()}/data/preprocessed/{train}')
