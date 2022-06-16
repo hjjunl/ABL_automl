@@ -21,13 +21,13 @@ import os
 
 today = datetime.today().strftime("%Y%m%d")
 
-model_path = './outputs/{today}/catboost/models'
-param_path = './outputs/{today}/catboost/params'
-visual_path = './outputs/{today}/catboost/visualization'
+model_path = f'./outputs/{today}/catboost/models'
+param_path = f'./outputs/{today}/catboost/params'
+visual_path = f'./outputs/{today}/catboost/visualization'
 
 _OUTPUT_DIR = pathlib.Path(os.path.join('./outputs'))
-_DATE_DIR = pathlib.Path(os.path.join('./outputs/{today}'))
-_CBC_DIR = pathlib.Path(os.path.join('./outputs/{today}/catboost'))
+_DATE_DIR = pathlib.Path(os.path.join(f'./outputs/{today}'))
+_CBC_DIR = pathlib.Path(os.path.join(f'./outputs/{today}/catboost'))
 _MODEL_DIR = pathlib.Path(os.path.join(model_path))
 _PARAM_DIR = pathlib.Path(os.path.join(param_path))
 _VISUAL_DIR = pathlib.Path(os.path.join(visual_path))
@@ -197,20 +197,31 @@ class CatBoostModel:
             print(f'Best Trial : {study.best_trial.params}')
             print("FINISH Optuna !!!")
 
-            if not gpu:
+            if len(np.unique(y_train)) == 2:
+                if not gpu:
+                    cbc_model = CatBoostClassifier(** study.best_trial.params, thread_count = int(cpu_cnt))
+                    self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
+
+                    if save_model:
+                        file_name = str(file_name) + '.pkl'
+                        self.save_model(filename = file_name, path = model_path)
+
+                    return self.model
+
+                else:
+                    cbc_model = CatBoostClassifier(** study.best_trial.params, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
+                    self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
+                    
+                    if save_model:
+                        file_name = str(file_name) + '.pkl'
+                        self.save_model(filename = file_name, path = model_path)
+
+                    return self.model
+
+            else:
                 cbc_model = CatBoostClassifier(** study.best_trial.params, thread_count = int(cpu_cnt))
                 self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
 
-                if save_model:
-                    file_name = str(file_name) + '.pkl'
-                    self.save_model(filename = file_name, path = model_path)
-
-                return self.model
-
-            else:
-                cbc_model = CatBoostClassifier(** study.best_trial.params, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
-                self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
-                
                 if save_model:
                     file_name = str(file_name) + '.pkl'
                     self.save_model(filename = file_name, path = model_path)
