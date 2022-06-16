@@ -89,9 +89,8 @@ class CatBoostModel:
                     cbc_model = CatBoostClassifier(n_estimators = 5000, thread_count = int(cpu_cnt), random_state = random_state)
                     self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
                 else:
-                    cbc_model = CatBoostClassifier(n_estimators = 5000, bootstrap_type='Poisson', random_state = random_state)
-                    self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500,\
-                                                task_type = 'GPU', devices = str(gpu_id))
+                    cbc_model = CatBoostClassifier(n_estimators = 5000, bootstrap_type='Poisson', random_state = random_state, task_type = 'GPU', devices = str(gpu_id))
+                    self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
 
                 if save_model:
                     file_name = str(file_name) + '.pkl'
@@ -114,9 +113,9 @@ class CatBoostModel:
                     self.model = rs_result
                 
                 else:
-                    cbc_model = CatBoostClassifier(n_estimators = 5000, bootstrap_type='Poisson', random_state = random_state)
+                    cbc_model = CatBoostClassifier(n_estimators = 5000, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id), random_state = random_state)
                     search = RandomizedSearchCV(cbc_model, params_rs, n_iter=trials, scoring='f1_macro', n_jobs=cpu_cnt, cv=cv, random_state=42)
-                    rs_result = search.fit(self.X_train, self.y_train, task_type = 'GPU', devices = str(gpu_id))
+                    rs_result = search.fit(self.X_train, self.y_train)
                     self.model = rs_result
 
                 with open(param_path+'/CBC_RandomSearch.json', 'w') as fp:
@@ -146,8 +145,8 @@ class CatBoostModel:
                         }
 
                     if gpu == True:
-                        model = CatBoostClassifier(** params_cbc, bootstrap_type='Poisson')
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500, task_type = 'GPU', devices = str(gpu_id))
+                        model = CatBoostClassifier(** params_cbc, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
+                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
                     else:
                         model = CatBoostClassifier(** params_cbc, thread_count = int(cpu_cnt))
                         model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
@@ -166,8 +165,8 @@ class CatBoostModel:
                         }
 
                     if gpu == True:
-                        model = CatBoostClassifier(** params_cbc, bootstrap_type='Poisson')
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500, task_type = 'GPU', devices = str(gpu_id))
+                        model = CatBoostClassifier(** params_cbc, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
+                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
                     else:
                         model = CatBoostClassifier(** params_cbc, thread_count = int(cpu_cnt))
                         model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
@@ -207,9 +206,8 @@ class CatBoostModel:
                 return self.model
 
             else:
-                cbc_model = CatBoostClassifier(** study.best_trial.params, bootstrap_type='Poisson')
-                self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], \
-                                                                            task_type = 'GPU', devices = str(gpu_id), early_stopping_rounds = 100, verbose = 500)
+                cbc_model = CatBoostClassifier(** study.best_trial.params, bootstrap_type='Poisson', task_type = 'GPU', devices = str(gpu_id))
+                self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
                 
                 if save_model:
                     file_name = str(file_name) + '.pkl'
