@@ -6,7 +6,7 @@ import pandas as pd
 import argparse
 import pickle
 import json
-import time
+from datetime import datetime
 
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
@@ -17,6 +17,8 @@ from sklearn.model_selection import KFold, cross_val_score
 from models.xgbmodel import XGBoostModel
 from models.lgbmmodel import LGBMModel
 from models.catboostmodel import CatBoostModel
+
+today = datetime.today().strftime("%Y%m%d")
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
@@ -73,13 +75,13 @@ if __name__ == '__main__':
 
 
     ### Model Selection ###
-    with open('./outputs/xgboost/params/XGB_RandomSearch.json','r') as fp:
+    with open(f'./outputs/{today}/xgboost/params/XGB_RandomSearch.json','r') as fp:
         xgb_params = json.load(fp)
 
-    with open('./outputs/lightgbm/params/LGBM_RandomSearch.json','r') as fp:
+    with open(f'./outputs/{today}/lightgbm/params/LGBM_RandomSearch.json','r') as fp:
         lgb_params = json.load(fp)
 
-    with open('./outputs/catboost/params/CBC_RandomSearch.json','r') as fp:
+    with open(f'./outputs/{today}/catboost/params/CBC_RandomSearch.json','r') as fp:
         cat_params = json.load(fp)
 
     models = {'XGB': XGBClassifier(** xgb_params, n_jobs = int(cpu_cnt), gpu=eval(gpu), gpu_id=gpu_id), \
