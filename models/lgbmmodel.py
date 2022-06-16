@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from utils import log
 import pickle
 from sklearn.model_selection import RandomizedSearchCV
-import datetime
+from datetime import datetime
 import warnings
 
 import pathlib
