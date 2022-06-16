@@ -7,8 +7,11 @@ import os
 import pandas as pd
 import argparse
 import pickle
+from datetime import datetime
 
 warnings.filterwarnings(action='ignore')
+
+today = datetime.today().strftime("%Y%m%d")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("parser")
@@ -43,10 +46,10 @@ if __name__ == '__main__':
     #### data load ####
     print(f'***************  Load dataset ******************')
     if train.split('.')[1] == "csv":
-        data = pd.read_csv(f'{os.getcwd()}/data/preprocessed/{train}')
+        data = pd.read_csv(f'{os.getcwd()}/data/{today}/preprocessed/{train}')
 
     elif train.split('.')[1] == "pkl":
-        data = pd.read_pickle(f'{os.getcwd()}/data/preprocessed/{train}')
+        data = pd.read_pickle(f'{os.getcwd()}/data/{today}/preprocessed/{train}')
 
     #### Sampling ####
     print(f'***************  Sampling dataset ******************')
@@ -60,4 +63,4 @@ if __name__ == '__main__':
     
     y_df = pd.DataFrame({target_name:y_sampling})
     df_sampling = pd.concat([X_sampling, y_df], axis=1)
-    df_sampling.to_pickle(f'{os.getcwd()}/data/preprocessed/{train}')
+    df_sampling.to_pickle(f'{os.getcwd()}/data/{today}/preprocessed/{train}')
