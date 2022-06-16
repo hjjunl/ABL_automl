@@ -6,7 +6,9 @@ import argparse
 import pickle
 
 from utils.xai import *
+from datetime import datetime
 
+today = datetime.today().strftime("%Y%m%d")
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
@@ -50,17 +52,17 @@ if __name__ == '__main__':
     #### XAI ####
     if model == 'XGB':
         print(f'***************  XGB XAI ******************')
-        xgb_model = pickle.load(open(f'{os.getcwd()}/outputs/xgboost/models/XGB.pkl', 'rb'))
+        xgb_model = pickle.load(open(f'{os.getcwd()}/outputs/{today}/xgboost/models/XGB.pkl', 'rb'))
         xai(xgb_model, X_test, y_test, eval(large_data))
 
     elif model == 'LGBM':
         print(f'***************  LGBM XAI ******************')
-        lgbm_model = pickle.load(open(f'{os.getcwd()}/outputs/xgboost/models/LGBM.pkl', 'rb'))
+        lgbm_model = pickle.load(open(f'{os.getcwd()}/outputs/{today}/lightgbm/models/LGBM.pkl', 'rb'))
         xai(lgbm_model, X_test, y_test, eval(large_data))
 
     elif model == 'CBC':
         print(f'***************  CatBoost XAI ******************')
-        cbc_model = pickle.load(open(f'{os.getcwd()}/outputs/xgboost/models/CBC.pkl', 'rb'))
+        cbc_model = pickle.load(open(f'{os.getcwd()}/outputs/{today}/catboost/models/CBC.pkl', 'rb'))
         xai(cbc_model, X_test, y_test, eval(large_data))
     else:
         print("Model type ERROR!!! (select model: XGB, LGBM, CBC)")
