@@ -140,8 +140,8 @@ class XGBoostModel:
                             }
 
                     if gpu == True:
-                        model = XGBClassifier( ** params_xgb)
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500, tree_method = 'gpu_hist', gpu_id = int(gpu_id))
+                        model = XGBClassifier( ** params_xgb,  tree_method = 'gpu_hist', gpu_id = int(gpu_id))
+                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
                     else:
                         model = XGBClassifier(** params_xgb, n_jobs = int(cpu_cnt))
                         model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
@@ -160,8 +160,8 @@ class XGBoostModel:
                         'eval_metric' : 'mlogloss',
                         }     
                     if gpu == True:
-                        model = XGBClassifier( ** params_xgb)
-                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500, tree_method = 'gpu_hist', gpu_id = int(gpu_id))
+                        model = XGBClassifier( ** params_xgb, tree_method = 'gpu_hist', gpu_id = int(gpu_id))
+                        model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
                     else:
                         model = XGBClassifier(** params_xgb, n_jobs = int(cpu_cnt))
                         model.fit(X_train, y_train, eval_set = [(X_train, y_train), (X_test, y_test)], early_stopping_rounds = 100, verbose = 500)
