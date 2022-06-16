@@ -197,7 +197,7 @@ class CatBoostModel:
             print(f'Best Trial : {study.best_trial.params}')
             print("FINISH Optuna !!!")
 
-            if len(np.unique(y_train)) == 2:
+            if len(np.unique(self.y_train)) == 2:
                 if not gpu:
                     cbc_model = CatBoostClassifier(** study.best_trial.params, thread_count = int(cpu_cnt))
                     self.model = cbc_model.fit(self.X_train, self.y_train, eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)], early_stopping_rounds = 100, verbose = 500)
