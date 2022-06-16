@@ -14,7 +14,6 @@
 
 [6. 부록](#etc)
 
-* 참고: https://agilesoda.notion.site/AutoML-68006cf33b21473da9045ae8ad9a12a2
 
 <hr>
 
@@ -23,13 +22,13 @@
 <hr>
     
 ### 2. 기본 기능 <span id="basic-function"><span>
-* db로부터 data 추출(option)
-* 모델 선정(option)
+* db로부터 data 추출
 * Feature Elimination
+* Data Balancing
+* 모델 선정
 * EDA
-* optuna를 통한 하이퍼파라미터 튜닝
+* 하이퍼파라미터 튜닝
 * 모델 학습 및 output 산출
-    - 단, multi classification 불가능
 
     
 <hr>
@@ -37,60 +36,57 @@
 ### 3. 폴더 목록 <span id="folder-list"><span>
 - query: get_dataset.py 실행 시 필요한 SQL파일이 저장된 폴더
 - images: README.md images 폴더
-- model_result: model 학습 후 model 별 폴더에 결과 & model 저장  
-    **[e.g]**
-    - CBC_clf 폴더 > CBC_clf(model), CBC_clf_score.csv 저장  
-- origin_data: train을 위한 원본 데이터 저장 폴더(feature selection 이전의, 전처리가 끝난 원본)
-- feature_output: visualization, EDA, feature_importances list가 저장되는 폴더  
-    **[e.g]**
-    - CBC_clf_feature_importances.pkl(feature_importance score file)
-    - CBC_clf_importances.png(feature_importance graph image)
-    - CBC_clf_SHAP.png(feature_importance SHAP image)
-    - EDA.html(pandas_profiling.ProfileReport html)  
-- params: optuna_best_parameter.py의 최적 paramter 결과물  
-    **[e.g]**
-    - Best_Params_CBC_clf.csv
-- preprocess_data: feature.py 실행 후 feature selection된 컬럼만 남겨진 csv 파일
+- output
+    - {model_name}/models: 모델이 저장된 폴더
+    - {model_name}/params: best parameter가 저장된 폴더
+    - {model_name}/visualization: 시각화 결과가 저장된 폴더
+- log: 로그 파일이 저장된 폴더
 
 <hr>
     
-### 4. 파일 목록 <span id="file-list"><span>
-#### get_dataset.py
-- MySQL db로부터 data 추출 후 origin_data에 csv 혹은 pickle 형태로 저장
-- total_script.py에서 실행 subprocess가 주석처리 되어있으므로, 사용 시 주석 해제
+### 4. 실행 스크립트 목록 - Plan A <span id="file-list"><span>
+#### model_selection.py
+- XGB, LGBM, CatBoost 모델 성능을 비교해 좋은 성능을 내는 모델을 찾기 위한 스크립트
+- 하이퍼파라미터의 경우 RandomSearch를 통해 최적의 파라미터를 찾은 결과
 
-#### vanilla_cv.py
-- 바닐라 모델 검증을 원할 시에 실행 가능한 파일
-- 여러 모델들을 추가하면 간략한 성능을 비교할 수 있어 모델 선정에 도움
-- 처음 baseline 실험용으로 사용 가능(필수 요소가 아닌 선택 사항)
-
-#### feature.py
-- EDA
-- 특정 model에 기반한 feature importance 파악
-- SHAP를 통한 feature importance 파악
-- RFE를 통한 Feature Elimination 진행
+#### data_balancing_binary.py / data_balancing_multi.py
+- target class별 데이터 분포가 다를 시 데이터를 balancing 해주기 위한 스크립트
+- Sampling 옵션: RandomUnderSample, RandomOverSample, Smote, SmoteNC, SmoteSVM, ADASYN
     
-#### optuna_best_parameter.py
-- feature.py를 통해 최적의 feature를 찾은 후 hyperparameter 탐색 및 저장
-- optuna_best_parameter.py의 parameter list는 [6. 부록](#etc) 참고
+#### param_tunning_save_model.py
+- Optuna를 통해 최적의 파라미터를 찾은 후 모델을 저장하기 위한 스크립트
     
-#### train.py
-- 선택된 model에 best hyperparamter 적용 후, preprocess_data 폴더 내 데이터로 학습
-- 학습후 model 및 결과 저장
-- ROC_curve graph image 저장
-- model 저장 및 load는 [6. 부록](#etc) 참고
+#### xai_results.py
+- XAI 대시보드를 생성하기 위한 스크립트
 
+#### total_script.py
+- 위 스크립트들을 한번에 실행시키는 스크립트
+    
+### 4. 실행 스크립트 목록 - Plan B <span id="file-list"><span>
+#### data_balancing_binary.py / data_balancing_multi.py
+- target class별 데이터 분포가 다를 시 데이터를 balancing 해주기 위한 스크립트
+- Sampling 옵션: RandomUnderSample, RandomOverSample, Smote, SmoteNC, SmoteSVM, ADASYN
+    
+#### model_selection_B.py
+- XGB, LGBM, CatBoost 모델 성능을 비교해 좋은 성능을 내는 모델을 찾기 위한 스크립트
+- 하이퍼파라미터의 경우 Optuna를 통해 최적의 파라미터를 찾은 결과
+    
+#### xai_results.py
+- XAI 대시보드를 생성하기 위한 스크립트
+    
+#### total_script_B.py
+- 위 스크립트들을 한번에 실행시키는 스크립트
 <hr>
     
     
 ### 5. 실행 메뉴얼 <span id="script-manual"><span>    
 #### 5-1. 실행전 체크리스트
 #### Version 확인 필수
-- python == 3.3.6
+- python == 3.8.6
 - pip == 20.3.3
 
 **0) 데이터 추출을 위한 준비**
-- [ ]  total_script.py에서 주석 해제
+- [ ]  total_script.py / total_script_B.py에서 주석 해제
 - [ ]  db_config.env 파일에 목록에 맞는 내용 작성
 - [ ]  QUERY의 경우 QUERY문이 별도로 저장되어 있는 SQL파일 경로 작성
 
@@ -103,62 +99,83 @@
 - [ ] 위 과정을 마친 데이터 형식이 csv혹은 pkl 형식인지 확인 (csv, pkl 형식만 사용가능)
     
 **2) 데이터 경로 확인**
-- [ ] origin_data 폴더에 1)번 과정이 끝난 데이터가 들어있는지 확인
-- [ ] feature.py를 실행시키지 않을 경우, preprocess_data 폴더에 모든 전처리가 끝난 데이터가 들어있는지 확인
+- [ ] data/raw 폴더에 원본 데이터가 들어있는지 확인
+- [ ] data/preprocessed 폴더에 preprocess 과정이 끝난 데이터가 들어있는지 확인
 
 **3) 기타 사항 확인**
-- [ ] total_script.py 실행을 위한 target(y값) column명 확인  
+- [ ] total_script.py / total_script_B.py 실행을 위한 target(y값) column명 확인  
 - [ ] 사용가능한 gpu 자원 확인 (cli 명령어: nvidia-smi)
     
-    
-#### 5-2. git clone
-```
-git clone https://gitlab.com/consulting10/automl.git 
-```
 
-#### 5-3. requirements 설치
+#### 5-2. requirements 설치
 ```
 pip install -r requirements.txt
 ```
 
-#### 5-4. total_script.py 실행을 위한 arguments 파악
+#### 5-3. total_script.py / total_script_B.py 실행을 위한 arguments 파악
 ```
 python total_script.py --help
 ```
-
-##### Output 예시)
-<img src="./images/help.png" alt="drawing" width="100%"/>
-
+    
+```
+python total_script_B.py --help
+```
     
 ##### option 설명
-- -model_type: model type 선택
-    - default = XGB_clf
-    - 사용가능 option = XGB_clf, XGB_reg, CBC_clf, CBC_reg, LGB_clf, LGB_reg
-- -data : 학습을 위한 data(csv, pkl 형식만 가능)
-    - feature.py를 실행하지 않고 optuna.py를 바로 실행 시 data는 preprocess_data fold에 있어야함
+- -train: 학습을 위한 train data (csv, pkl 형식만 가능)
     - default = train.csv
-- -target: data의 target column name 입력
+- -test : 평가를 위한 test data(csv, pkl 형식만 가능)
+    - default = test.csv
+- -target: data의 target column name
     - default = target
-- -cpu_cnt: 사용할 cpu 개수 선택
-    - default = 1
-- -trials: optuna.py에서 optuna study.optimize 진행 시 n_trial 값
-    - default = 1
-- -test_size: test_size 값 설정
+- -cv: Cross validation 횟수
+    - default = 5
+
+- -sampling: Data balancing을 위한 sampling기법 선택
+    - default = RandomUnderSample
+    - 사용가능한 옵션: RandomUnderSample, RandomOverSample, Smote, SmoteNC, SmoteSVM, ADASYN
+- -sampling_ratio: Data balancing 하기위한 비율
+    - default = 0.5
+    - Binary classification: float형식으로 비율 설정
+    - Multi classificatio: dictionary형식으로 class에 따른 데이터 수 설정 (ex. {0:100, 1:200, 2:150})
+- -sampling_k_neighbors: Data balancing을 위한 k neighbor수
+    - default = 5
+- -sampling_m_neighbors: Data balancing을 위한 m neighbor수
+    - default = 10
+- -smotesvm_stepsize: Data balancing에서 Smote SVM 실행시 step size
+    - default = 0.5
+- -smotesvm_stepsize: Data balancing에서 SmoteNC 실행시 categorical features index 설정
+    - default = None
+
+- -model_type: 모델 타입 설정
+    - default = XGB
+    - 사용가능한 옵션: XGB, LGBM, CBC
+- -large_data: 큰 데이터 인지 여부 설정
+    - default = False
+    - 사용가능한 옵션: True, False
+- -valid_size: validation 비율 설정
     - default = 0.2
+- -model_save: 모델을 저장할지 여부 설정
+    - default = True
+    - 사용가능한 옵션: True, False
+- -trials: optuna 진행 시 trial 횟수
+    - default = 1
+
 - -gpu: gpu 설정(XGB, CBC만 가능)
     - default = False
 - -gpu_id: gpu_id 설정
     - default = 0
-- -feature: RFE feauture 선택 시 1 step 별 선택하는 feature 개수
-    - default = 20
-- -memo: train.py 중 model score 기록 시 memo 기록 (memo에는 공백대신 _로 채우기)
-    - default = NaN
+- -cpu_cnt: 사용할 cpu 개수 선택
+    - default = 1
 
-
-#### 5-5. total_script.py 실행
+#### 5-4. total_script.py / total_script_B.py 실행
 **실행 예시**
 ```
-python total_script.py -model_type CBC_reg -data train.csv -target label 
+python total_script.py -model_type CBC -data train.csv -target label 
+```
+    
+```
+python total_script_B.py -model_type CBC -data train.csv -target label 
 ```
 
 **일부 기능만 실행 시 주석 처리 후 진행 [6. 부록](#etc) 참고**
@@ -208,9 +225,7 @@ model = pickle.load(open(f'{os.getcwd()}/model_result/CBC_clf/CBC_clf', 'rb'))
     
     
 #### 6-3. 일부 기능 실행
-
 - total_script.py의 main 함수 중 subprocess 주석 처리 후 실행
-- optuna_best_parameter.py를 실행하지 않고 train.py만 실행 시 parameter는 default로 진행
     
 
 # ABL_automl
@@ -256,4 +271,3 @@ https://github.com/Balacoumarane/casestudy/blob/31839566f1daecf7faab0f5aa80e5120
 Data
 1. Multi: https://www.kaggle.com/competitions/prudential-life-insurance-assessment/data
 2. Binary: https://github.com/mwitiderrick/insurancedata/blob/master/insurance_claims.csv
- 

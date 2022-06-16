@@ -15,18 +15,6 @@ def main(train, test, target, cv, sampling, sampling_ratio, sampling_k_neighbors
     #     print("============================= Finish get_dataset.py =============================")
     
 
-    try:
-        print("============================= Start Model Selection =============================")
-        subprocess.run(['python', 'model_selection.py', '-train', train, '-target', target, '-cv', cv, '-gpu', gpu, '-gpu_id', gpu_id,\
-                        '-cpu_cnt', cpu_cnt])
-    except Exception as e:
-        print("Model Selection ERROR!!!")
-        print("ERROR Code: ", e)
-    else:
-        print("============================= Finish Model Selection =============================")
-
-
-
     # try:
     #     print("============================= Start Data Balancing (binary) =============================")
     #     subprocess.run(['python', 'data_balancing_binary.py', '-train', train, '-target', target, '-sampling', sampling, \
@@ -37,6 +25,7 @@ def main(train, test, target, cv, sampling, sampling_ratio, sampling_k_neighbors
     #     print("ERROR Code: ", e)
     # else:
     #     print("============================= Finish Data Balancing =============================")
+
 
     try:
         print("============================= Start Data Balancing (multi) =============================")
@@ -51,17 +40,15 @@ def main(train, test, target, cv, sampling, sampling_ratio, sampling_k_neighbors
 
 
 
-
     try:
-        print("============================= Start Hyper Parameter Tunning & Generate Model =============================")
-        subprocess.run(['python', 'param_tunning_save_model.py', '-train', train, '-target', target, '-model', model_type, \
-                            '-valid_size', valid_size, '-model_save', model_save, '-trials', trials, '-gpu', gpu, '-gpu_id', gpu_id, '-cpu_cnt', cpu_cnt])
+        print("============================= Start Parameter tunning & Model Selection =============================")
+        subprocess.run(['python', 'model_selection_B.py', '-train', train, '-target', target, '-cv', cv, '-gpu', gpu, '-gpu_id', gpu_id,\
+                        '-cpu_cnt', cpu_cnt])
     except Exception as e:
-        print("Parameter Tunning & Generate Model ERROR!!!")
+        print("Model Selection ERROR!!!")
         print("ERROR Code: ", e)
     else:
-        print("============================= Finish Hyper Parameter Tunning =============================")
-
+        print("============================= Finish Parameter tunning & Model Selection =============================")
 
     try:
         print("============================= Start XAI =============================")
