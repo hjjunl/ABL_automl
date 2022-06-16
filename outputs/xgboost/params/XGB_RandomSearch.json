@@ -1,0 +1,1 @@
+{"subsample": 1, "reg_lambda": 1e-05, "reg_alpha": 0.001, "max_depth": 6, "max_bin": 100, "learning_rate": 0.003, "eval_metric": "mlogloss", "colsample_bytree": 1}

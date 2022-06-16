@@ -1,0 +1,2 @@
+2022-06-16 11:21:57,215 [models.xgbmodel] [INFO] Saving model as pickle file to the path: ./outputs/xgboost/models
+2022-06-16 11:21:57,232 [models.xgbmodel] [INFO] Model saved
