@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import argparse
 import pickle
-import time
+from datetime import datetime
 
 from sklearn.model_selection import train_test_split
 
@@ -12,6 +12,7 @@ from models.xgbmodel import XGBoostModel
 from models.lgbmmodel import LGBMModel
 from models.catboostmodel import CatBoostModel
 
+today = datetime.today().strftime("%Y%m%d")
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
@@ -59,9 +60,7 @@ if __name__ == '__main__':
     if model == 'XGB':
         print(f'***************  XGB Best Parameter Search (Optuna) ******************')
         xgb = XGBoostModel(X_train, y_train, X_valid, y_valid)
-        start = time.time()
         xgb.train(Optuna=True, trials=int(trials), gpu=eval(gpu), gpu_id=int(gpu_id), cpu_cnt=int(cpu_cnt), save_model=eval(model_save), file_name='XGB')
-        print("time :", time.time() - start)
 
     elif model == 'LGBM':
         print(f'***************  LGBM Best Parameter Search (Optuna) ******************')
