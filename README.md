@@ -243,6 +243,8 @@ https://github.com/Balacoumarane/casestudy/blob/31839566f1daecf7faab0f5aa80e5120
 
 
 
+    Model selection 후 data balancing 진행 > 최적의 balancing 기법 선택
+    
 
 Data
 1. Multi: https://www.kaggle.com/competitions/prudential-life-insurance-assessment/data
