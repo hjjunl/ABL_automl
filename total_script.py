@@ -13,7 +13,16 @@ def main(train, test, target, cv, sampling, sampling_ratio, sampling_k_neighbors
     #     print("ERROR Code: ", e)
     # else:
     #     print("============================= Finish get_dataset.py =============================")
-    
+        
+    try:
+        print("============================= Start feature_selection.py =============================")
+        subprocess.run(['python', 'feature_selection.py', '-model_type', model_type, '-train', train, '-test', test, '-target', target, '-gpu', gpu, '-gpu_id', gpu_id,\
+                        '-cpu_cnt', cpu_cnt])
+    except Exception as e:
+        print("Preprocess ERROR!!!")
+        print("ERROR Code: ", e)
+    else:
+        print("============================= Finish feature.py =============================")    
 
     try:
         print("============================= Start Model Selection =============================")
