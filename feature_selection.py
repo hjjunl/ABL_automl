@@ -74,11 +74,11 @@ class feature_selections:
 
         return importances
 
-    def feature_selection_rfe(self, train, test, importances_df, model, X_train, y_train, file_name, target):
+    def feature_selection_rfe(self, train, test, importances_df, model, X_train, y_train, target):
         print('****************  Feature Selection Started ******************')
         start = time.time()
 
-        selector = RFE(model, n_features_to_select=int(10), step=2, verbose=500)
+        selector = RFE(model, n_features_to_select=int(10), step=2, verbose=500) # 60
         selector = selector.fit(X_train, y_train)
         temp = pd.DataFrame(selector.support_, columns=['feature_bool'])
         importances = pd.concat([importances_df, temp], axis=1)
@@ -88,22 +88,32 @@ class feature_selections:
 
         newdata_train = train[features]
         newdata_train[target] = train[target]
+        
+        newdata_test = test[features]
+        newdata_test[target] = test[target]
         print(final_table)
-        if file_name.split('.')[1] == "csv":
-            newdata_train.to_csv(f'./data/preprocessed/{today}/train.csv', index=False)
+#         if train.split('.')[1] == "csv":
+#             newdata_train.to_csv(f'./data/preprocessed/{today}/{train}.csv, index=False)
 
-        elif file_name.split('.')[1] == "pkl":
-            newdata_train.to_pickle(f'./data/preprocessed/{today}/train')
+#         elif train.split('.')[1] == "pkl":
+#             newdata_train.to_pickle(f'./data/preprocessed/{today}/{train}')
+#         if test.split('.')[1] == "csv":
+#             newdata_train.to_csv(f'./data/preprocessed/{today}/{test}.csv, index=False)
+
+#         elif train.split('.')[1] == "pkl":
+#             newdata_train.to_pickle(f'./data/preprocessed/{today}/{test}')
+                                 
         print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+        feature_selection_rfecv(self, newdata_train, newdata_test, model, train[features], train[target], target)                         
 
-    def feature_selection_rfecv(self, train, test, model, X_train, y_train, file_name, target):
+    def feature_selection_rfecv(self, train, test, model, X_train, y_train, target):
         print('****************  Feature Selection RFECV Started ******************')
         print(train)
         start = time.time()
 
-        min_features_to_select = 1
-        rfecv = RFECV(model, cv=StratifiedKFold(2), step=1, scoring='f1', importance_getter='auto',
-                      min_features_to_select=2)
+        min_features_to_select = 5
+        rfecv = RFECV(model, cv=StratifiedKFold(5), step=1, scoring='f1', importance_getter='auto',
+                      min_features_to_select=5)
         # step 제거하는 feature 수
         # min_features_to_select 최소 남기는 feature 수
         selector = rfecv.fit(X_train, y_train)
@@ -155,18 +165,19 @@ class feature_selections:
 
         new_train = train[final_col]
         new_test = test[final_col]
-        if file_name.split('.')[1] == "csv":
-            new_train.to_csv(f'./data/preprocess_data/{today}/{file_name}', index=False)
+        if train.split('.')[1] == "csv":
+            new_train.to_csv(f'./data/preprocess_data/{today}/{train}.csv', index=False)
 
-        elif file_name.split('.')[1] == "pkl":
-            new_train.to_pickle(f'./data/preprocess_data/{today}/{file_name}')
+        elif train.split('.')[1] == "pkl":
+            new_train.to_pickle(f'./data/preprocess_data/{today}/{train}')
 
-        if file_name.split('.')[1] == "csv":
-            new_test.to_csv(f'./data/preprocess_data/{today}/{file_name}', index=False)
+        if test.split('.')[1] == "csv":
+            new_test.to_csv(f'./data/preprocess_data/{today}/{test}.csv', index=False)
 
-        elif file_name.split('.')[1] == "pkl":
-            new_test.to_pickle(f'./data/preprocess_data/{today}/{file_name}')
-        print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+        elif test.split('.')[1] == "pkl":
+            new_test.to_pickle(f'./data/preprocess_data/{today}/{test}')
+        # 현재시각 - 시작시간 = 실행 시간
+        print("time :", time.time() - start)  
 
     # def permutation_feature_selection(self, model, X_train, y_train, file_name):
     #     print('****************  Feature Selection permutation importance Started ******************')
@@ -186,41 +197,42 @@ class feature_selections:
 
 def main(model_type, train, test, target):
     print(f'{os.getcwd()}/data/raw')
-    # train_d = 'train.csv'
-    # test_d = 'test.csv'
-    #
-    # target = 'fraud_reported'
-    # if train_d.split('.')[1] == "csv":
-    #     train_data = pd.read_csv(f'{os.getcwd()}/data/raw/{today}/{train_d}')
-    #
-    # elif train_d.split('.')[1] == "pkl":
-    #     train_data = pd.read_pickle(f'{os.getcwd()}/data/raw/{today}/{train_d}')
-    #
-    # if test_d.split('.')[1] == "csv":
-    #     test_data = pd.read_csv(f'{os.getcwd()}/data/raw/{today}/{test_d}')
-    #
-    # elif test_d.split('.')[1] == "pkl":
-    #     test_data = pd.read_pickle(f'{os.getcwd()}/data/raw/{today}/{test_d}')
-    #
-    # print("========== Feature Importance ==========")
-    # data2 = train_data.drop(columns=[target])
-    #
-    # X_train, X_valid, y_train, y_valid = train_test_split(data2, train_data[target], test_size=float(0.2),
-    #                                                       random_state=42)
-    #
-    # print("==========  Model Training For Feature Importance  ===========")
-    # print(f'                  <model_type : {model_type} >')
-    # # XGBoostModel.train()
-    # xgboost_model = XGBoostModel(X_train, y_train, X_valid, y_valid)
-    # model = xgboost_model.train(Optuna=None, RandomSearch=None, trials=1, params=None, gpu=False, gpu_id=0, cpu_cnt=1, save_model=False, file_name='XGBoostClassifier', random_state=42, cv=5)
-    # fs_class = feature_selections(train, X_train, y_train, model_type)
-    # # eda(model, data, target, model_type)
-    # # rfe -> 100-> 60
-    # importances_df = fs_class.feature_importance(model, X_train, model_type)
-    # # 60 -> rest
-    # fs_class.feature_selection_rfe(train, test, importances_df, model, X_train, y_train, file_name, target)
-    # fs_class.feature_selection_rfecv(train, test, model, X_train, y_train, file_name, target)
-    # # fs_class.permutation_feature_selection(train, test, model, X_train, y_train, file_name)
+    train_d = 'train.csv'
+    test_d = 'test.csv'
+    
+    target = 'fraud_reported'
+    if train.split('.')[1] == "csv":
+        train_data = pd.read_csv(f'{os.getcwd()}/data/raw/{today}/{train}')
+    
+    elif train.split('.')[1] == "pkl":
+        train_data = pd.read_pickle(f'{os.getcwd()}/data/raw/{today}/{train}')
+    
+    if test.split('.')[1] == "csv":
+        test_data = pd.read_csv(f'{os.getcwd()}/data/raw/{today}/{test}')
+    
+    elif test.split('.')[1] == "pkl":
+        test_data = pd.read_pickle(f'{os.getcwd()}/data/raw/{today}/{test}')
+        
+
+    print("========== Feature Importance ==========")
+    data2 = train_data.drop(columns=[target])
+    
+    X_train, X_valid, y_train, y_valid = train_test_split(data2, train_data[target], test_size=float(0.2),
+                                                          random_state=42)
+    
+    print("==========  Model Training For Feature Importance  ===========")
+    print(f'                  <model_type : {model_type} >')
+    # XGBoostModel.train()
+    xgboost_model = XGBoostModel(X_train, y_train, X_valid, y_valid)
+    model = xgboost_model.train(Optuna=None, RandomSearch=None, trials=1, params=None, gpu=False, gpu_id=0, cpu_cnt=1, save_model=False, file_name='XGBoostClassifier', random_state=42, cv=5)
+    fs_class = feature_selections(train, X_train, y_train, model_type)
+    # eda(model, data, target, model_type)
+    # rfe -> 100-> 60
+    importances_df = fs_class.feature_importance(model, X_train, model_type)
+    # 60 -> rest
+    fs_class.feature_selection_rfe(train, test, importances_df, model, X_train, y_train, file_name, target)
+    fs_class.feature_selection_rfecv(train, test, model, X_train, y_train, file_name, target)
+    # fs_class.permutation_feature_selection(train, test, model, X_train, y_train, file_name)
 
 
 def parse_args():
@@ -238,8 +250,3 @@ def parse_args():
 
     args = parser.parse_args()
     return args.model_type, args.train, args.test, args.target
-        # , args.gpu, args.gpu_id, args.cpu_cnt
-
-
-if __name__ == '__main__':
-    main(*parse_args())
